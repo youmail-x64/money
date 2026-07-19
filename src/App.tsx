@@ -498,7 +498,6 @@ export default function App() {
                   </div>
                   <div>
                     <h3 className="font-serif font-bold text-natural-brand-dark text-base">Database Keuangan: Google Sheet Anda</h3>
-                    <p className="text-[10px] text-natural-muted font-medium">Pilih lembar kerja Google Sheets di Drive Anda yang akan digunakan sebagai basis penyimpanan data.</p>
                   </div>
                 </div>
 
