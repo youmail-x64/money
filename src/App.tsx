@@ -94,9 +94,16 @@ export default function App() {
         // Clear auth since token expired
         handleLogout();
       } else {
-        const mins = Math.floor(diff / 60000);
+        const days = Math.floor(diff / (24 * 3600 * 1000));
+        const hours = Math.floor((diff % (24 * 3600 * 1000)) / (3600 * 1000));
+        const mins = Math.floor((diff % (3600 * 1000)) / 60000);
         const secs = Math.floor((diff % 60000) / 1000);
-        if (mins > 0) {
+
+        if (days > 0) {
+          setSessionTimeLeft(`Sisa sesi: ${days}h ${hours}j`);
+        } else if (hours > 0) {
+          setSessionTimeLeft(`Sisa sesi: ${hours}j ${mins}m`);
+        } else if (mins > 0) {
           setSessionTimeLeft(`Sisa sesi: ${mins}m`);
         } else {
           setSessionTimeLeft(`Sisa sesi: ${secs}d`);
@@ -465,7 +472,7 @@ export default function App() {
                     }}
                     className="w-4 h-4 rounded border-natural-border text-natural-brand focus:ring-natural-soft focus:ring-opacity-50"
                   />
-                  <span>Ingat saya (Simpan sesi 1 jam)</span>
+                  <span>Ingat saya (Simpan sesi 7 hari)</span>
                 </label>
                 
                 <span className="text-[10px] text-natural-muted">Sesi berakhir otomatis</span>

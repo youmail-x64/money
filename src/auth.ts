@@ -65,8 +65,8 @@ export const googleSignIn = async (rememberMe: boolean = true): Promise<{ user: 
 
     cachedAccessToken = credential.accessToken;
     
-    // Store token and expiration (1 hour lifespan for Google access token)
-    const expiresAt = Date.now() + 3600 * 1000;
+    // Store token and expiration (7 days lifespan for Remember Me)
+    const expiresAt = Date.now() + 7 * 24 * 3600 * 1000;
     
     localStorage.setItem('g_remember_me', rememberMe ? 'true' : 'false');
     if (rememberMe) {
