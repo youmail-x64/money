@@ -24,6 +24,11 @@ export default function App() {
   const [token, setToken] = useState<string | null>(null);
   const [needsAuth, setNeedsAuth] = useState(true);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
+  const [rememberMe, setRememberMe] = useState<boolean>(() => {
+    const saved = localStorage.getItem('g_remember_me');
+    return saved !== 'false'; // default to true
+  });
+  const [sessionTimeLeft, setSessionTimeLeft] = useState<string>('');
 
   // Spreadsheet selector states
   const [spreadsheetsList, setSpreadsheetsList] = useState<Array<{ id: string; name: string }>>([]);
@@ -69,6 +74,41 @@ export default function App() {
     return () => unsubscribe();
   }, []);
 
+  // 1b. Session expiry timer effect
+  useEffect(() => {
+    if (!token) {
+      setSessionTimeLeft('');
+      return;
+    }
+
+    const updateTimer = () => {
+      const expiresAtStr = localStorage.getItem('g_token_expires_at');
+      if (!expiresAtStr) {
+        setSessionTimeLeft('');
+        return;
+      }
+      const expiresAt = parseInt(expiresAtStr, 10);
+      const diff = expiresAt - Date.now();
+      if (diff <= 0) {
+        setSessionTimeLeft('Sesi Kedaluwarsa');
+        // Clear auth since token expired
+        handleLogout();
+      } else {
+        const mins = Math.floor(diff / 60000);
+        const secs = Math.floor((diff % 60000) / 1000);
+        if (mins > 0) {
+          setSessionTimeLeft(`Sisa sesi: ${mins}m`);
+        } else {
+          setSessionTimeLeft(`Sisa sesi: ${secs}d`);
+        }
+      }
+    };
+
+    updateTimer();
+    const interval = setInterval(updateTimer, 30000); // Check every 30 seconds
+    return () => clearInterval(interval);
+  }, [token]);
+
   // 2. Fetch list of sheets from Drive when logged in
   const loadSpreadsheetOptions = async (accessToken: string) => {
     setIsLoadingSheets(true);
@@ -95,7 +135,7 @@ export default function App() {
     setIsLoggingIn(true);
     setGlobalError('');
     try {
-      const result = await googleSignIn();
+      const result = await googleSignIn(rememberMe);
       if (result) {
         setUser(result.user);
         setToken(result.accessToken);
@@ -304,6 +344,11 @@ export default function App() {
                   <span className="text-xs text-natural-brand flex items-center gap-1 font-semibold justify-end">
                     <span className="w-2 h-2 bg-natural-brand rounded-full"></span> Terhubung Sheets
                   </span>
+                  {sessionTimeLeft && (
+                    <span className="text-[10px] text-natural-muted font-medium mt-0.5" title="Sisa durasi akses Google API sebelum perlu login ulang">
+                      {sessionTimeLeft}
+                    </span>
+                  )}
                 </div>
 
                 <div className="hidden sm:flex items-center gap-2.5 pl-2 border-l border-natural-border-light">
@@ -411,6 +456,25 @@ export default function App() {
                   <span className="gsi-material-button-contents font-bold text-natural-text text-xs">Sign in with Google</span>
                 </div>
               </button>
+
+              {/* Remember Me Checkbox */}
+              <div className="flex items-center justify-between text-xs text-natural-muted px-1" id="remember-me-container">
+                <label className="flex items-center gap-2 cursor-pointer select-none">
+                  <input
+                    type="checkbox"
+                    checked={rememberMe}
+                    onChange={(e) => {
+                      const val = e.target.checked;
+                      setRememberMe(val);
+                      localStorage.setItem('g_remember_me', val ? 'true' : 'false');
+                    }}
+                    className="w-4 h-4 rounded border-natural-border text-natural-brand focus:ring-natural-soft focus:ring-opacity-50"
+                  />
+                  <span>Ingat saya (Simpan sesi 1 jam)</span>
+                </label>
+                
+                <span className="text-[10px] text-natural-muted">Sesi berakhir otomatis</span>
+              </div>
 
               <div className="flex items-center justify-center gap-1.5 text-[10px] text-natural-brand bg-natural-soft p-3 rounded-xl border border-natural-border">
                 <ShieldCheck size={14} className="text-natural-brand" />
