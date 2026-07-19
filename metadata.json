@@ -1,0 +1,6 @@
+{
+  "name": "Personal Finance & Envelope Budgeting System",
+  "description": "A Google Sheets-powered envelope budgeting system with dynamic transaction logging and pocket management.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
