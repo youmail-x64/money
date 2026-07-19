@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import { createPortal } from 'react-dom';
 import { Pocket, Transaction } from '../googleSheetsService';
 import { 
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, 
@@ -536,8 +537,8 @@ export default function BudgetDashboard({
       </div>
 
       {/* Pocket Delete Confirmation Modal */}
-      {pocketToDelete && (
-        <div className="fixed inset-0 bg-[#2d2a26]/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-fadeIn">
+      {pocketToDelete && createPortal(
+        <div className="fixed inset-0 bg-[#2d2a26]/60 backdrop-blur-xs flex items-center justify-center p-4 z-[9999] animate-fadeIn">
           <div className="bg-white rounded-[32px] w-full max-w-md shadow-2xl border border-natural-border p-6 space-y-6">
             <div className="flex items-start gap-4">
               <div className="p-3 bg-[#faf1eb] text-natural-rust rounded-full shrink-0">
@@ -569,12 +570,13 @@ export default function BudgetDashboard({
               </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* Transaction Delete Confirmation Modal */}
-      {txToDelete && (
-        <div className="fixed inset-0 bg-[#2d2a26]/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-fadeIn">
+      {txToDelete && createPortal(
+        <div className="fixed inset-0 bg-[#2d2a26]/60 backdrop-blur-xs flex items-center justify-center p-4 z-[9999] animate-fadeIn">
           <div className="bg-white rounded-[32px] w-full max-w-md shadow-2xl border border-natural-border p-6 space-y-6">
             <div className="flex items-start gap-4">
               <div className="p-3 bg-[#faf1eb] text-natural-rust rounded-full shrink-0">
@@ -606,7 +608,8 @@ export default function BudgetDashboard({
               </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
     </div>
